@@ -6,7 +6,7 @@ Este documento detalha o processo de colaboração e os padrões técnicos que e
 
 Adotamos o modelo de **Feature Branches**. Nunca trabalhe diretamente na branch `main`.
 
-1.  **Criação de Branch:** Para cada nova funcionalidade ou correção, crie uma branch descritiva (ex: `feat/login-page` ou `fix/db-connection`).
+1.  **Criação de Branch:** Para cada nova funcionalidade ou correção, crie uma branch descritiva (ex: `front/feat/login-page` ou `db/fix/db-connection`).
 2.  **Desenvolvimento:** Realize suas alterações na sua branch.
 3.  **Pull Request (PR):** Ao finalizar, abra um PR para a branch `main` do repositório original.
 4.  **Revisão:** Pelo menos um colega deve revisar o código antes do merge.
