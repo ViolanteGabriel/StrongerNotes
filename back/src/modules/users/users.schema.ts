@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const createUserBodySchema = z.object({
   name: z.string().trim().min(1),
   email: z.string().trim().email().toLowerCase(),
-  passwordHash: z.string().min(1),
+  password: z.string().min(8),
 }).strict();
 
 export const userIdParamsSchema = z.object({
