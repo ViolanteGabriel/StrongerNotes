@@ -20,6 +20,14 @@ Adotamos o modelo de **Feature Branches**. Nunca trabalhe diretamente na branch 
     *   **Surface (Slate/Neutral):** Para sobriedade e robustez.
 *   **Dark Mode:** O sistema deve sempre suportar os temas Light e Dark de forma consistente.
 
+### Sequência sugerida de implementação
+
+*   **Fase 1.1:** `GET /health` (já existente) + `GET /api/v1/users`
+*   **Fase 1.2:** `POST /api/v1/users` (cadastro inicial)
+*   **Fase 2.1:** `POST /api/v1/auth/register` e `POST /api/v1/auth/login`
+*   **Fase 2.2:** rotas protegidas com JWT (`preHandler`)
+*   **Fase 3+:** rotas de treino (`workouts`, `sessions`, `sets`) e progresso
+
 ## 🗺️ Roadmap de Desenvolvimento
 
 Estamos seguindo um plano dividido em fases:
