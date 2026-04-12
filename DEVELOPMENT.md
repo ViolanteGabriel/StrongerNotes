@@ -20,25 +20,6 @@ Adotamos o modelo de **Feature Branches**. Nunca trabalhe diretamente na branch 
     *   **Surface (Slate/Neutral):** Para sobriedade e robustez.
 *   **Dark Mode:** O sistema deve sempre suportar os temas Light e Dark de forma consistente.
 
-## 🧭 Implementação das Rotas do Back
-
-Para manter consistência na API (Fastify + TypeScript + Mongoose), adotaremos o padrão abaixo:
-
-1.  **Versionamento de rota:** prefixo `/api/v1` para todas as rotas de negócio.
-2.  **Estrutura por domínio:** cada módulo terá arquivos separados para `routes`, `controllers`, `services` e `schemas` (validação).
-3.  **Validação de entrada:** uso de `zod` para validar `body`, `params` e `querystring`.
-4.  **Padrão de resposta:**
-    *   Sucesso: `{ data, message? }`
-    *   Erro: `{ error, details? }`
-5.  **Códigos HTTP padronizados:**
-    *   `200`/`201` para sucesso
-    *   `400` para validação
-    *   `401`/`403` para autenticação/autorização
-    *   `404` para recurso não encontrado
-    *   `409` para conflito (ex.: e-mail já cadastrado)
-6.  **Tratamento centralizado de erros:** registrar um `setErrorHandler` global no Fastify.
-7.  **Testabilidade:** toda regra de negócio deve ficar no `service`, evitando lógica complexa na rota.
-
 ### Sequência sugerida de implementação
 
 *   **Fase 1.1:** `GET /health` (já existente) + `GET /api/v1/users`
