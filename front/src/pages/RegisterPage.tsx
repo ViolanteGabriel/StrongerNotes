@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Dumbbell, ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { createUser } from "../services/requests/users/createUser";
-import { getHealth } from "../services/requests/test/getHealth";
-import { getUsers } from "../services/requests/users/getUsers";
+import { AxiosError } from "axios";
 
 
 const RegisterPage = () => {
@@ -11,20 +10,39 @@ const RegisterPage = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [apiError, setApiError] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("Registration attempt:", { name, email, password });
+		setApiError("");
+		setIsSubmitting(true);
 		// TEMPORARY: not secure password handling, just for testing the endpoint
-		createUser({
-			name,
-			email,
-			passwordHash: password
-		}).then((response) => {
-			console.log("User created successfully:", response);
-		}).catch((error) => {
+		try {
+			await createUser({
+				name,
+				email,
+				passwordHash: password
+			});
+			setName("");
+			setEmail("");
+			setPassword("");
+		} catch (error) {
+			if (error instanceof AxiosError) {
+				if (error.response?.status === 409) {
+					setApiError("This e-mail is already registered.");
+				} else if (error.response?.status === 400) {
+					setApiError("Please check your name, e-mail and password format.");
+				} else {
+					setApiError("Could not create account right now. Please try again.");
+				}
+			} else {
+				setApiError("Unexpected error. Please try again.");
+			}
 			console.error("Error creating user:", error);
-		});
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 
@@ -46,6 +64,11 @@ const RegisterPage = () => {
 			</div>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
+				{apiError && (
+					<div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+						{apiError}
+					</div>
+				)}
 				<div>
 				<label htmlFor="name" className="block text-sm font-semibold mb-2">
 					Full Name
@@ -115,10 +138,10 @@ const RegisterPage = () => {
 
 				<button
 					type="submit"
+					disabled={isSubmitting}
 					className="w-full py-4 px-6 text-primary-foreground bg-primary hover:opacity-90 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"
-					onClick={handleSubmit}
 				>
-					Get Started
+					{isSubmitting ? "Creating account..." : "Get Started"}
 				</button>
 			</form>
 
