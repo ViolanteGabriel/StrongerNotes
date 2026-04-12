@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify, { FastifyError } from 'fastify';
 import cors from '@fastify/cors';
 import { usersRoutes } from './modules/users/users.routes.js';
 
@@ -16,3 +16,14 @@ app.get('/health', async () => {
 });
 
 app.register(usersRoutes, { prefix: '/api/v1/users' });
+
+// global error handler
+app.setErrorHandler((error: FastifyError, request, reply) => {
+  const status = error.statusCode || 500;
+  const message = error.message || 'Internal server error';
+
+  reply.status(status).send({
+    error: message,
+    statusCode: status,
+  });
+});
