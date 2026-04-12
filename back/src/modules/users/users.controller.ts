@@ -3,11 +3,13 @@ import mongoose from 'mongoose';
 import { createUserBodySchema, userIdParamsSchema } from './users.schema.js';
 import { createUser, findUserById, listUsers } from './users.service.js';
 
+// returns all users
 export async function getUsersController(_request: FastifyRequest, reply: FastifyReply) {
   const users = await listUsers();
   return reply.status(200).send({ data: users });
 }
 
+// validates input and creates a new user
 export async function createUserController(request: FastifyRequest, reply: FastifyReply) {
   const parsedBody = createUserBodySchema.safeParse(request.body);
 
@@ -30,6 +32,7 @@ export async function createUserController(request: FastifyRequest, reply: Fasti
   }
 }
 
+// validates id and returns a single user
 export async function getUserByIdController(request: FastifyRequest, reply: FastifyReply) {
   const parsedParams = userIdParamsSchema.safeParse(request.params);
 
