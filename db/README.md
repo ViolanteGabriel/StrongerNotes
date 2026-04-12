@@ -1,5 +1,10 @@
 # MongoDB local (Docker)
 
+## Scripts de inicializacao
+
+Os scripts em `db/init` sao executados automaticamente no primeiro startup do volume.
+Arquivo atual: `db/init/01-create-users-collection.js`.
+
 ## Subir
 
 docker compose up -d
@@ -27,6 +32,8 @@ docker compose down
 ## Derrubar e apagar dados
 
 docker compose down -v
+
+> Use `down -v` quando quiser reaplicar scripts de inicializacao em um ambiente limpo.
 
 ## URI para o backend
 

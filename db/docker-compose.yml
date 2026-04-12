@@ -9,6 +9,7 @@ services:
       MONGO_INITDB_DATABASE: strongernotes
     volumes:
       - mongo_data:/data/db
+      - ./init:/docker-entrypoint-initdb.d:ro
 
 volumes:
   mongo_data:
