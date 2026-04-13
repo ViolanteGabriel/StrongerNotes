@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dumbbell, ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { createUser } from "../services/requests/users/createUser";
+import { login } from "../services/requests/auth/login";
 import { AxiosError } from "axios";
 
 
 const RegisterPage = () => {
+	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
@@ -23,12 +25,16 @@ const RegisterPage = () => {
 				email,
 				password
 			});
-			setName("");
-			setEmail("");
-			setPassword("");
+
+			// Auto login after registration
+			const loginResponse = await login({ email, password });
+			localStorage.setItem("token", loginResponse.data.token);
+			localStorage.setItem("user", JSON.stringify(loginResponse.data.user));
+
+			navigate("/dashboard");
 		} catch (error) {
 			if (error instanceof AxiosError) {
-				if (error.response?.status === 409) {
+...
 					setApiError("This e-mail is already registered.");
 				} else if (error.response?.status === 400) {
 					setApiError("Please check your name, e-mail and password format.");

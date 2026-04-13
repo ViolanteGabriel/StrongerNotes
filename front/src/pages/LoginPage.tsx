@@ -1,16 +1,45 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dumbbell, ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { login } from "../services/requests/auth/login";
+import { AxiosError } from "axios";
 
 
 const LoginPage = () => {
+	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [apiError, setApiError] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("Login attempt:", { email, password });
+		setApiError("");
+		setIsSubmitting(true);
+		
+		try {
+			const response = await login({ email, password });
+			
+			// For now, store token in localStorage
+			localStorage.setItem("token", response.data.token);
+			localStorage.setItem("user", JSON.stringify(response.data.user));
+			
+			navigate("/dashboard"); // Redirect to dashboard
+		} catch (error) {
+			if (error instanceof AxiosError) {
+				if (error.response?.status === 401) {
+					setApiError("Invalid e-mail or password.");
+				} else {
+					setApiError("Could not sign in right now. Please try again.");
+				}
+			} else {
+				setApiError("Unexpected error. Please try again.");
+			}
+			console.error("Login error:", error);
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -31,6 +60,11 @@ const LoginPage = () => {
 			</div>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
+				{apiError && (
+					<div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+						{apiError}
+					</div>
+				)}
 				<div>
 				<label htmlFor="email" className="block text-sm font-semibold mb-2">
 					Email
@@ -85,9 +119,10 @@ const LoginPage = () => {
 
 				<button
 				type="submit"
+				disabled={isSubmitting}
 				className="w-full py-4 px-6 text-primary-foreground bg-primary hover:opacity-90 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"
 				>
-				Sign In
+				{isSubmitting ? "Signing In..." : "Sign In"}
 				</button>
 			</form>
 

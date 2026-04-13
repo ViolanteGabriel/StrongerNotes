@@ -23,8 +23,8 @@ export async function createUserController(request: FastifyRequest, reply: Fasti
   try {
     const createdUser = await createUser(parsedBody.data);
     return reply.status(201).send({ data: createdUser });
-  } catch (error) {
-    if (error instanceof mongoose.Error && (error as { code?: number }).code === 11000) {
+  } catch (error: any) {
+    if (error.code === 11000) {
       return reply.status(409).send({ error: 'E-mail already registered' });
     }
 
