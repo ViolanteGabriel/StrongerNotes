@@ -35,3 +35,5 @@ The smoke suite covers:
 - custom exercise creation
 - cardio duration logging
 - progress rendering after logged strength data
+- profile information editing
+- account deletion and rejected login after deletion
