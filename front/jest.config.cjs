@@ -9,6 +9,8 @@ module.exports = {
     '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
   },
   moduleNameMapper: {
+    '^bson$': '<rootDir>/../back/node_modules/bson/lib/bson.cjs',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__tests__/styleMock.cjs',
     '\\.(svg|png|jpg|jpeg|gif|ico)$': '<rootDir>/src/__tests__/fileMock.cjs',
   },
