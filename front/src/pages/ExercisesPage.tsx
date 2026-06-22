@@ -137,8 +137,9 @@ const ExercisesPage = () => {
             )}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-1">
-                <label className="block text-sm font-semibold mb-1">Name</label>
+                <label htmlFor="new-exercise-name" className="block text-sm font-semibold mb-1">Name</label>
                 <input
+                  id="new-exercise-name"
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
@@ -147,8 +148,9 @@ const ExercisesPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">Category</label>
+                <label htmlFor="new-exercise-category" className="block text-sm font-semibold mb-1">Category</label>
                 <select
+                  id="new-exercise-category"
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value as "strength" | "cardio")}
                   className="w-full px-3 py-2 bg-input border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm"
@@ -158,8 +160,9 @@ const ExercisesPage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">Muscle Group</label>
+                <label htmlFor="new-exercise-muscle" className="block text-sm font-semibold mb-1">Muscle Group</label>
                 <input
+                  id="new-exercise-muscle"
                   type="text"
                   value={newMuscle}
                   onChange={(e) => setNewMuscle(e.target.value)}
@@ -188,6 +191,7 @@ const ExercisesPage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-foreground opacity-50" />
             <input
+              aria-label="Search exercises"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}

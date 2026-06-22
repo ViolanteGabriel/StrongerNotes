@@ -1,0 +1,14 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: strongernotes-e2e-mongo
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: strongernotes_e2e
+    volumes:
+      - strongernotes_e2e_mongo_data:/data/db
+
+volumes:
+  strongernotes_e2e_mongo_data:
