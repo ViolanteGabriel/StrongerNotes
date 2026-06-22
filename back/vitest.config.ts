@@ -7,6 +7,7 @@ export default defineConfig({
     globalSetup: ['./src/test/global-setup.ts'],
     setupFiles: ['./src/test/setup.ts'],
     fileParallelism: false,
+    maxWorkers: 1,
     hookTimeout: 60_000,
     testTimeout: 30_000,
     exclude: ['**/node_modules/**', '**/dist/**'],

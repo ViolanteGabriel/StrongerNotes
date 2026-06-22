@@ -39,7 +39,7 @@ interface CardioDataPoint {
 
 type ProgressDataPoint = StrengthDataPoint | CardioDataPoint;
 
-function buildProgressData(
+export function buildProgressData(
   exercise: Pick<IExercise, 'category'>,
   sets: ISet[],
   sessionDateMap: Map<string, Date>,
