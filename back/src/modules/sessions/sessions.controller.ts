@@ -16,6 +16,8 @@ import {
   updateSet,
   deleteSet,
 } from './sessions.service.js';
+import { findWorkoutById } from '../workouts/workouts.service.js';
+import { canAccessExercise, findExerciseById } from '../exercises/exercises.service.js';
 
 export async function getSessionsController(request: FastifyRequest, reply: FastifyReply) {
   const sessions = await listSessions(request.user.sub);
@@ -26,6 +28,13 @@ export async function createSessionController(request: FastifyRequest, reply: Fa
   const parsed = createSessionBodySchema.safeParse(request.body);
   if (!parsed.success) {
     return reply.status(400).send({ error: 'Validation error', details: parsed.error.format() });
+  }
+
+  const workout = await findWorkoutById(parsed.data.workoutId);
+  if (!workout) return reply.status(404).send({ error: 'Workout not found' });
+
+  if (workout.owner.toString() !== request.user.sub) {
+    return reply.status(403).send({ error: 'Forbidden' });
   }
 
   const session = await createSession(parsed.data, request.user.sub);
@@ -84,6 +93,13 @@ export async function createSetController(request: FastifyRequest, reply: Fastif
     return reply.status(403).send({ error: 'Forbidden' });
   }
 
+  const exercise = await findExerciseById(parsedBody.data.exerciseId);
+  if (!exercise) return reply.status(404).send({ error: 'Exercise not found' });
+
+  if (!canAccessExercise(exercise, request.user.sub)) {
+    return reply.status(403).send({ error: 'Forbidden' });
+  }
+
   const set = await createSet(parsedParams.data.id, parsedBody.data);
   return reply.status(201).send({ data: set });
 }
@@ -106,7 +122,7 @@ export async function updateSetController(request: FastifyRequest, reply: Fastif
     return reply.status(403).send({ error: 'Forbidden' });
   }
 
-  const updated = await updateSet(parsedParams.data.setId, parsedBody.data);
+  const updated = await updateSet(parsedParams.data.id, parsedParams.data.setId, parsedBody.data);
   if (!updated) return reply.status(404).send({ error: 'Set not found' });
 
   return reply.status(200).send({ data: updated });
@@ -125,7 +141,7 @@ export async function deleteSetController(request: FastifyRequest, reply: Fastif
     return reply.status(403).send({ error: 'Forbidden' });
   }
 
-  const deleted = await deleteSet(parsed.data.setId);
+  const deleted = await deleteSet(parsed.data.id, parsed.data.setId);
   if (!deleted) return reply.status(404).send({ error: 'Set not found' });
 
   return reply.status(204).send();
