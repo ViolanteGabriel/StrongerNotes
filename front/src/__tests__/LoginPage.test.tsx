@@ -44,7 +44,7 @@ describe('LoginPage', () => {
   it('renders email and password fields and a submit button', () => {
     renderLoginPage();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
@@ -54,7 +54,7 @@ describe('LoginPage', () => {
     renderLoginPage();
 
     await userEvent.type(screen.getByLabelText(/email/i), 'john@example.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.type(screen.getByLabelText(/^password$/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {
@@ -74,7 +74,7 @@ describe('LoginPage', () => {
     renderLoginPage();
 
     await userEvent.type(screen.getByLabelText(/email/i), 'john@example.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'wrongpass');
+    await userEvent.type(screen.getByLabelText(/^password$/i), 'wrongpass');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     expect(await screen.findByText(/invalid e-?mail or password/i)).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('LoginPage', () => {
     renderLoginPage();
 
     await userEvent.type(screen.getByLabelText(/email/i), 'john@example.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.type(screen.getByLabelText(/^password$/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     expect(await screen.findByText(/could not sign in right now/i)).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe('LoginPage', () => {
     renderLoginPage();
 
     await userEvent.type(screen.getByLabelText(/email/i), 'john@example.com');
-    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.type(screen.getByLabelText(/^password$/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {

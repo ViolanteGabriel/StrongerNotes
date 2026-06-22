@@ -137,6 +137,7 @@ const RegisterPage = () => {
                   />
                   <button
                     type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-foreground opacity-50 hover:opacity-100 transition-opacity"
                   >

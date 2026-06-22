@@ -219,59 +219,65 @@ const ProgressPage = () => {
                   <h2 className="font-bold mb-6">
                     {isStrength ? "Load Progression" : "Duration Progression"}
                   </h2>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #e5e7eb)" opacity={0.5} />
-                      <XAxis
-                        dataKey="date"
-                        tick={{ fontSize: 12 }}
-                        stroke="var(--color-secondary-foreground, #6b7280)"
-                      />
-                      <YAxis
-                        tick={{ fontSize: 12 }}
-                        stroke="var(--color-secondary-foreground, #6b7280)"
-                        width={45}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "var(--color-card, #fff)",
-                          border: "1px solid var(--color-border, #e5e7eb)",
-                          borderRadius: "12px",
-                          fontSize: "13px",
-                        }}
-                      />
-                      <Legend wrapperStyle={{ fontSize: "13px", paddingTop: "16px" }} />
-                      {isStrength ? (
-                        <>
+                  <div
+                    data-testid="exercise-progress-chart"
+                    role="img"
+                    aria-label={`${progress.exercise.name} ${isStrength ? "load" : "duration"} progress chart`}
+                  >
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #e5e7eb)" opacity={0.5} />
+                        <XAxis
+                          dataKey="date"
+                          tick={{ fontSize: 12 }}
+                          stroke="var(--color-secondary-foreground, #6b7280)"
+                        />
+                        <YAxis
+                          tick={{ fontSize: 12 }}
+                          stroke="var(--color-secondary-foreground, #6b7280)"
+                          width={45}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "var(--color-card, #fff)",
+                            border: "1px solid var(--color-border, #e5e7eb)",
+                            borderRadius: "12px",
+                            fontSize: "13px",
+                          }}
+                        />
+                        <Legend wrapperStyle={{ fontSize: "13px", paddingTop: "16px" }} />
+                        {isStrength ? (
+                          <>
+                            <Line
+                              type="monotone"
+                              dataKey="Est. 1RM (kg)"
+                              stroke="#06b6d4"
+                              strokeWidth={2.5}
+                              dot={{ r: 4, fill: "#06b6d4" }}
+                              activeDot={{ r: 6 }}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Max Weight (kg)"
+                              stroke="#64748b"
+                              strokeWidth={2}
+                              strokeDasharray="5 5"
+                              dot={{ r: 3, fill: "#64748b" }}
+                            />
+                          </>
+                        ) : (
                           <Line
                             type="monotone"
-                            dataKey="Est. 1RM (kg)"
-                            stroke="#06b6d4"
+                            dataKey="Duration (min)"
+                            stroke="#f97316"
                             strokeWidth={2.5}
-                            dot={{ r: 4, fill: "#06b6d4" }}
+                            dot={{ r: 4, fill: "#f97316" }}
                             activeDot={{ r: 6 }}
                           />
-                          <Line
-                            type="monotone"
-                            dataKey="Max Weight (kg)"
-                            stroke="#64748b"
-                            strokeWidth={2}
-                            strokeDasharray="5 5"
-                            dot={{ r: 3, fill: "#64748b" }}
-                          />
-                        </>
-                      ) : (
-                        <Line
-                          type="monotone"
-                          dataKey="Duration (min)"
-                          stroke="#f97316"
-                          strokeWidth={2.5}
-                          dot={{ r: 4, fill: "#f97316" }}
-                          activeDot={{ r: 6 }}
-                        />
-                      )}
-                    </LineChart>
-                  </ResponsiveContainer>
+                        )}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
 
                 {/* History table */}
@@ -280,7 +286,7 @@ const ProgressPage = () => {
                     <h2 className="font-bold">Session History</h2>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm" aria-label={`${progress.exercise.name} progress history`}>
                       <thead>
                         <tr className="border-b border-border bg-secondary/30">
                           <th className="text-left px-5 py-3 font-semibold text-secondary-foreground opacity-80">Date</th>

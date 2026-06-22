@@ -112,33 +112,33 @@ const SetRow = ({
             <>
               <div>
                 <label className="text-xs text-secondary-foreground opacity-70 font-medium">Reps</label>
-                <input type="number" min="1" value={reps} onChange={(e) => setReps(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+                <input aria-label="Edit reps" type="number" min="1" value={reps} onChange={(e) => setReps(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
               </div>
               <div>
                 <label className="text-xs text-secondary-foreground opacity-70 font-medium">Weight (kg)</label>
-                <input type="number" min="0.5" step="0.5" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+                <input aria-label="Edit weight" type="number" min="0.5" step="0.5" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
               </div>
             </>
           ) : (
             <div>
               <label className="text-xs text-secondary-foreground opacity-70 font-medium">Duration (s)</label>
-              <input type="number" min="1" value={durationSecs} onChange={(e) => setDurationSecs(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+              <input aria-label="Edit duration" type="number" min="1" value={durationSecs} onChange={(e) => setDurationSecs(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
             </div>
           )}
           <div>
             <label className="text-xs text-secondary-foreground opacity-70 font-medium">Rest (s)</label>
-            <input type="number" min="1" value={restSecs} onChange={(e) => setRestSecs(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+            <input aria-label="Edit rest" type="number" min="1" value={restSecs} onChange={(e) => setRestSecs(e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
           </div>
           <div className="sm:col-span-1 col-span-2 sm:col-start-auto">
             <label className="text-xs text-secondary-foreground opacity-70 font-medium">Notes</label>
-            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="optional" className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+            <input aria-label="Edit notes" type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="optional" className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
+          <button aria-label="Save set changes" onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
             <Check className="w-3.5 h-3.5" /> Save
           </button>
-          <button onClick={() => setEditing(false)} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
+          <button aria-label="Cancel set edit" onClick={() => setEditing(false)} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
             Cancel
           </button>
         </div>
@@ -160,10 +160,10 @@ const SetRow = ({
       <p className="flex-1 text-sm">{summary || <span className="opacity-50 italic">No data logged</span>}</p>
       {set.notes && <p className="text-xs text-secondary-foreground opacity-60 truncate max-w-[120px]">{set.notes}</p>}
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={() => setEditing(true)} className="p-1 rounded text-secondary-foreground hover:text-foreground transition-colors">
+        <button aria-label="Edit set" onClick={() => setEditing(true)} className="p-1 rounded text-secondary-foreground hover:text-foreground transition-colors">
           <Dumbbell className="w-3.5 h-3.5" />
         </button>
-        <button onClick={handleDelete} className="p-1 rounded text-secondary-foreground hover:text-red-500 transition-colors">
+        <button aria-label="Delete set" onClick={handleDelete} className="p-1 rounded text-secondary-foreground hover:text-red-500 transition-colors">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -216,33 +216,33 @@ const AddSetForm = ({
           <>
             <div>
               <label className="text-xs text-secondary-foreground opacity-70 font-medium">Reps</label>
-              <input type="number" min="1" value={draft.reps} onChange={(e) => set("reps", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+              <input aria-label="Reps" type="number" min="1" value={draft.reps} onChange={(e) => set("reps", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div>
               <label className="text-xs text-secondary-foreground opacity-70 font-medium">Weight (kg)</label>
-              <input type="number" min="0.5" step="0.5" value={draft.weightKg} onChange={(e) => set("weightKg", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+              <input aria-label="Weight (kg)" type="number" min="0.5" step="0.5" value={draft.weightKg} onChange={(e) => set("weightKg", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
             </div>
           </>
         ) : (
           <div>
             <label className="text-xs text-secondary-foreground opacity-70 font-medium">Duration (s)</label>
-            <input type="number" min="1" value={draft.durationSecs} onChange={(e) => set("durationSecs", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+            <input aria-label="Duration (s)" type="number" min="1" value={draft.durationSecs} onChange={(e) => set("durationSecs", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
           </div>
         )}
         <div>
           <label className="text-xs text-secondary-foreground opacity-70 font-medium">Rest (s)</label>
-          <input type="number" min="1" value={draft.restSecs} onChange={(e) => set("restSecs", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+          <input aria-label="Rest (s)" type="number" min="1" value={draft.restSecs} onChange={(e) => set("restSecs", e.target.value)} className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
         </div>
         <div className="sm:col-span-1 col-span-2">
           <label className="text-xs text-secondary-foreground opacity-70 font-medium">Notes</label>
-          <input type="text" value={draft.notes} onChange={(e) => set("notes", e.target.value)} placeholder="optional" className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
+          <input aria-label="Notes" type="text" value={draft.notes} onChange={(e) => set("notes", e.target.value)} placeholder="optional" className="w-full mt-1 px-2 py-1.5 bg-input border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" />
         </div>
       </div>
       <div className="flex gap-2">
-        <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
+        <button aria-label={`Log set for ${exercise.name}`} onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
           <Check className="w-3.5 h-3.5" /> Log Set
         </button>
-        <button onClick={onCancel} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
+        <button aria-label={`Cancel set for ${exercise.name}`} onClick={onCancel} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
           Cancel
         </button>
       </div>
@@ -342,9 +342,12 @@ const SessionPage = () => {
                 {new Date(session.date).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
               </p>
             </div>
-            <div className="bg-primary/10 text-primary rounded-xl px-4 py-2 text-center shrink-0">
+            <div
+              className="bg-primary/10 text-primary rounded-xl px-4 py-2 text-center shrink-0"
+              aria-label={`${totalSets} ${totalSets === 1 ? "set" : "sets"} logged`}
+            >
               <p className="text-2xl font-bold">{totalSets}</p>
-              <p className="text-xs font-medium opacity-80">sets logged</p>
+              <p className="text-xs font-medium opacity-80">{totalSets === 1 ? "set" : "sets"} logged</p>
             </div>
           </div>
         </div>
@@ -400,6 +403,7 @@ const SessionPage = () => {
                       </div>
                     ) : (
                       <button
+                        aria-label={`Log set for ${exercise.name}`}
                         onClick={() => setAddingForExercise(exercise._id)}
                         className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors"
                       >

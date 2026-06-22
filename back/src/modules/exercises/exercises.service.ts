@@ -16,6 +16,14 @@ export async function createExercise(payload: CreateExerciseBody, userId: string
   return exercise.toObject();
 }
 
+export async function findExerciseById(exerciseId: string) {
+  return Exercise.findById(exerciseId).lean();
+}
+
+export function canAccessExercise(exercise: Pick<IExercise, 'isCustom' | 'createdBy'>, userId: string) {
+  return !exercise.isCustom || exercise.createdBy?.toString() === userId;
+}
+
 interface StrengthDataPoint {
   date: string;
   maxWeight: number;
@@ -122,7 +130,10 @@ export async function getAllExercisesProgress(userId: string) {
   }
 
   const exerciseIds = [...setsByExercise.keys()];
-  const exercises = await Exercise.find({ _id: { $in: exerciseIds } }).lean();
+  const exercises = await Exercise.find({
+    _id: { $in: exerciseIds },
+    $or: [{ isCustom: false }, { createdBy: userId }],
+  }).lean();
   const exerciseMap = new Map(exercises.map((e) => [e._id.toString(), e]));
 
   const result: { exercise: typeof exercises[number]; data: ProgressDataPoint[] }[] = [];

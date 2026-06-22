@@ -19,6 +19,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
+      aria-label="Toggle theme"
       className="p-2 rounded-lg bg-secondary text-secondary-foreground hover:opacity-80 transition-all border border-border"
     >
       {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
@@ -304,12 +305,14 @@ const DashboardPage = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => navigate(`/workouts/${workout._id}`)}
+                        aria-label={`View ${workout.name}`}
                         className="px-3 py-2 text-sm font-semibold bg-secondary text-secondary-foreground rounded-lg hover:opacity-80 transition-all"
                       >
                         View
                       </button>
                       <button
                         onClick={() => handleStartRoutine(workout._id)}
+                        aria-label={`Start ${workout.name}`}
                         disabled={startingWorkoutId === workout._id}
                         className="px-3 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all disabled:opacity-60"
                       >
@@ -356,6 +359,7 @@ const DashboardPage = () => {
                     <button
                       key={session._id}
                       type="button"
+                      aria-label={`Open ${session.workout?.name ?? "workout"} session from ${dateLabel}`}
                       onClick={() => navigate(`/sessions/${session._id}`)}
                       className="w-full text-left bg-card border border-border rounded-2xl px-6 py-4 hover:border-primary/50 transition-colors"
                     >

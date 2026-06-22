@@ -53,7 +53,7 @@ const WorkoutDetailPage = () => {
     if (!isNew && id) {
       fetches.push(
         getWorkoutById(id)
-          .then((w) => { setWorkout(w); setWorkoutName(w.name); })
+          .then((w) => { setWorkout(w); setWorkoutName(w.name); setEditingName(false); })
           .catch(() => navigate("/dashboard"))
           .finally(() => setLoading(false))
       );
@@ -182,6 +182,7 @@ const WorkoutDetailPage = () => {
             <div className="flex items-center gap-3">
               <input
                 ref={nameInputRef}
+                aria-label="Routine name"
                 type="text"
                 value={workoutName}
                 onChange={(e) => setWorkoutName(e.target.value)}
@@ -189,11 +190,20 @@ const WorkoutDetailPage = () => {
                 placeholder="e.g. Push Day A"
                 className="flex-1 text-2xl font-bold bg-transparent border-b-2 border-primary outline-none pb-1 placeholder:text-secondary-foreground/40"
               />
-              <button onClick={handleSaveName} disabled={saving || !workoutName.trim()} className="p-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 transition-all">
+              <button
+                aria-label="Save routine name"
+                onClick={handleSaveName}
+                disabled={saving || !workoutName.trim()}
+                className="p-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 transition-all"
+              >
                 <Check className="w-5 h-5" />
               </button>
               {!isNew && (
-                <button onClick={() => { setWorkoutName(workout?.name ?? ""); setEditingName(false); }} className="p-2 bg-secondary text-secondary-foreground rounded-lg hover:opacity-80 transition-all border border-border">
+                <button
+                  aria-label="Cancel routine name edit"
+                  onClick={() => { setWorkoutName(workout?.name ?? ""); setEditingName(false); }}
+                  className="p-2 bg-secondary text-secondary-foreground rounded-lg hover:opacity-80 transition-all border border-border"
+                >
                   <X className="w-5 h-5" />
                 </button>
               )}
@@ -201,7 +211,11 @@ const WorkoutDetailPage = () => {
           ) : (
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-extrabold tracking-tight">{workout?.name}</h1>
-              <button onClick={() => setEditingName(true)} className="p-1.5 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-secondary transition-all">
+              <button
+                aria-label="Edit routine name"
+                onClick={() => setEditingName(true)}
+                className="p-1.5 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-secondary transition-all"
+              >
                 <Pencil className="w-4 h-4" />
               </button>
             </div>
@@ -214,6 +228,7 @@ const WorkoutDetailPage = () => {
             <div className="flex items-center gap-3 mb-8">
               <button
                 onClick={handleStartSession}
+                aria-label={`Start session for ${workout.name}`}
                 disabled={startingSession || workout.exercises.length === 0}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 transition-all"
               >
@@ -244,6 +259,7 @@ const WorkoutDetailPage = () => {
                   <div className="relative mb-3">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-foreground opacity-50" />
                     <input
+                      aria-label="Search exercises"
                       type="text"
                       value={exerciseSearch}
                       onChange={(e) => setExerciseSearch(e.target.value)}
@@ -258,6 +274,7 @@ const WorkoutDetailPage = () => {
                       filteredExercises.map((ex) => (
                         <button
                           key={ex._id}
+                          aria-label={`Add ${ex.name}`}
                           onClick={() => handleAddExercise(ex)}
                           className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-secondary transition-all text-left"
                         >
@@ -296,6 +313,7 @@ const WorkoutDetailPage = () => {
                         <p className="text-xs text-secondary-foreground opacity-60">{ex.muscleGroup} · {ex.category}</p>
                       </div>
                       <button
+                        aria-label={`Remove ${ex.name}`}
                         onClick={() => handleRemoveExercise(ex._id)}
                         className="p-1.5 text-secondary-foreground hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                       >

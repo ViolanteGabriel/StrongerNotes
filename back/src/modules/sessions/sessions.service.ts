@@ -55,12 +55,12 @@ export async function createSet(sessionId: string, payload: CreateSetBody) {
   return WorkoutSet.findById(set._id).populate('exercise', 'name category muscleGroup').lean();
 }
 
-export async function updateSet(setId: string, payload: UpdateSetBody) {
-  return WorkoutSet.findByIdAndUpdate(setId, { $set: payload }, { new: true })
+export async function updateSet(sessionId: string, setId: string, payload: UpdateSetBody) {
+  return WorkoutSet.findOneAndUpdate({ _id: setId, session: sessionId }, { $set: payload }, { new: true })
     .populate('exercise', 'name category muscleGroup')
     .lean();
 }
 
-export async function deleteSet(setId: string) {
-  return WorkoutSet.findByIdAndDelete(setId).lean();
+export async function deleteSet(sessionId: string, setId: string) {
+  return WorkoutSet.findOneAndDelete({ _id: setId, session: sessionId }).lean();
 }

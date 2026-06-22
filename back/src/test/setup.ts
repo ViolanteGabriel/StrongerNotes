@@ -3,7 +3,9 @@ import { afterAll, beforeAll, beforeEach } from 'vitest';
 
 beforeAll(async () => {
   if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(process.env.MONGODB_URI + 'strongernotes_test');
+    const uri = process.env.MONGODB_URI;
+    if (!uri) throw new Error('MONGODB_URI must be set before tests run.');
+    await mongoose.connect(uri);
   }
 });
 
