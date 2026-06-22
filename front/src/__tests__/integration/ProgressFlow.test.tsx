@@ -38,6 +38,27 @@ describe('ProgressFlow', () => {
   });
 
   describe('ProgressOverviewPage', () => {
+    it('shows empty state when there is no progress data', async () => {
+      mockGetAllExercisesProgress.mockResolvedValueOnce([]);
+
+      render(
+        <AuthContext.Provider value={mockAuthContext}>
+          <ThemeContext.Provider value={{ theme: 'light', toggleTheme: jest.fn() }}>
+            <MemoryRouter initialEntries={['/progress']}>
+              <Routes>
+                <Route path="/progress" element={<ProgressOverviewPage />} />
+              </Routes>
+            </MemoryRouter>
+          </ThemeContext.Provider>
+        </AuthContext.Provider>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('No data yet')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /go to dashboard/i })).toHaveAttribute('href', '/dashboard');
+      });
+    });
+
     it('shows loading and then data', async () => {
       mockGetAllExercisesProgress.mockResolvedValueOnce([
         {
@@ -73,7 +94,19 @@ describe('ProgressFlow', () => {
       });
       
       const benchPill = screen.getByRole('button', { name: 'Hide Bench Press strength progress' });
-      await userEvent.click(benchPill); // Toggle visibility
+      const runPill = screen.getByRole('button', { name: 'Hide Run cardio progress' });
+
+      await userEvent.click(benchPill);
+      expect(screen.getByText(/select at least one exercise to see the chart/i)).toBeInTheDocument();
+
+      await userEvent.click(benchPill);
+      expect(screen.getByRole('button', { name: 'Hide Bench Press strength progress' })).toBeInTheDocument();
+
+      await userEvent.click(runPill);
+      expect(screen.getByText(/select at least one exercise to see the chart/i)).toBeInTheDocument();
+
+      await userEvent.click(screen.getByRole('button', { name: 'Show Run cardio progress' }));
+      expect(screen.getByRole('button', { name: 'Hide Run cardio progress' })).toBeInTheDocument();
     });
 
     it('shows error state', async () => {
