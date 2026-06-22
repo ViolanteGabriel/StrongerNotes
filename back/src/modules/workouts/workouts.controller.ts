@@ -11,6 +11,17 @@ import {
   updateWorkout,
   deleteWorkout,
 } from './workouts.service.js';
+import { canAccessExercise, findExerciseById } from '../exercises/exercises.service.js';
+
+async function getExerciseReferenceError(exerciseIds: string[], userId: string) {
+  for (const exerciseId of new Set(exerciseIds)) {
+    const exercise = await findExerciseById(exerciseId);
+    if (!exercise) return { statusCode: 404, error: 'Exercise not found' };
+    if (!canAccessExercise(exercise, userId)) return { statusCode: 403, error: 'Forbidden' };
+  }
+
+  return null;
+}
 
 export async function getWorkoutsController(request: FastifyRequest, reply: FastifyReply) {
   const workouts = await listWorkouts(request.user.sub);
@@ -21,6 +32,11 @@ export async function createWorkoutController(request: FastifyRequest, reply: Fa
   const parsed = createWorkoutBodySchema.safeParse(request.body);
   if (!parsed.success) {
     return reply.status(400).send({ error: 'Validation error', details: parsed.error.format() });
+  }
+
+  const referenceError = await getExerciseReferenceError(parsed.data.exercises, request.user.sub);
+  if (referenceError) {
+    return reply.status(referenceError.statusCode).send({ error: referenceError.error });
   }
 
   const workout = await createWorkout(parsed.data, request.user.sub);
@@ -59,6 +75,13 @@ export async function updateWorkoutController(request: FastifyRequest, reply: Fa
 
   if (workout.owner.toString() !== request.user.sub) {
     return reply.status(403).send({ error: 'Forbidden' });
+  }
+
+  if (parsedBody.data.exercises) {
+    const referenceError = await getExerciseReferenceError(parsedBody.data.exercises, request.user.sub);
+    if (referenceError) {
+      return reply.status(referenceError.statusCode).send({ error: referenceError.error });
+    }
   }
 
   const updated = await updateWorkout(parsedParams.data.id, parsedBody.data);

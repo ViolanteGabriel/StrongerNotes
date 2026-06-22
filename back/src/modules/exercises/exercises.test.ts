@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { createTestApp, createTestUser, loginTestUser } from '../../test/helpers.js';
 
@@ -7,6 +7,9 @@ let token: string;
 
 beforeAll(async () => {
   app = await createTestApp();
+});
+
+beforeEach(async () => {
   await createTestUser(app);
   const res = await loginTestUser(app, 'test@example.com', 'password123');
   token = res.data.token;

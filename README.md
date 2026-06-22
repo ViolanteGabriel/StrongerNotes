@@ -229,7 +229,7 @@ cd back
 npm test
 ```
 
-60 testes cobrindo todas as rotas (usuarios, auth, exercises, workouts, sessions, sets e progress).
+72 testes cobrindo rotas e fluxos de integracao (usuarios, auth, exercises, workouts, sessions, sets e progress).
 Utilizam MongoDB em memória — não requer Docker nem banco externo.
 
 ---

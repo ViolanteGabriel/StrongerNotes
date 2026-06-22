@@ -5,6 +5,8 @@ import {
   createExercise,
   getExerciseProgress,
   getAllExercisesProgress,
+  findExerciseById,
+  canAccessExercise,
 } from './exercises.service.js';
 
 export async function getExercisesController(request: FastifyRequest, reply: FastifyReply) {
@@ -31,6 +33,13 @@ export async function getExerciseProgressController(request: FastifyRequest, rep
   const parsed = exerciseIdParamsSchema.safeParse(request.params);
   if (!parsed.success) {
     return reply.status(400).send({ error: 'Validation error', details: parsed.error.format() });
+  }
+
+  const exercise = await findExerciseById(parsed.data.id);
+  if (!exercise) return reply.status(404).send({ error: 'Exercise not found' });
+
+  if (!canAccessExercise(exercise, request.user.sub)) {
+    return reply.status(403).send({ error: 'Forbidden' });
   }
 
   const result = await getExerciseProgress(parsed.data.id, request.user.sub);
