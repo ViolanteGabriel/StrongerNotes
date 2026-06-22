@@ -314,6 +314,7 @@ const ProgressOverviewPage = () => {
                     return (
                       <button
                         key={entry.exercise._id}
+                        aria-label={`${hidden ? "Show" : "Hide"} ${entry.exercise.name} strength progress`}
                         onClick={() => toggleStrength(entry.exercise._id)}
                         className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                           hidden
@@ -336,7 +337,12 @@ const ProgressOverviewPage = () => {
                     Select at least one exercise to see the chart.
                   </p>
                 ) : (
-                  <ResponsiveContainer width="100%" height={320}>
+                  <div
+                    data-testid="strength-progress-overview-chart"
+                    role="img"
+                    aria-label="Strength estimated 1RM progress overview chart"
+                  >
+                    <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={strengthChart} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #e5e7eb)" opacity={0.5} />
                       <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="var(--color-secondary-foreground, #6b7280)" />
@@ -367,7 +373,8 @@ const ProgressOverviewPage = () => {
                         );
                       })}
                     </LineChart>
-                  </ResponsiveContainer>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </section>
             )}
@@ -386,6 +393,7 @@ const ProgressOverviewPage = () => {
                     return (
                       <button
                         key={entry.exercise._id}
+                        aria-label={`${hidden ? "Show" : "Hide"} ${entry.exercise.name} cardio progress`}
                         onClick={() => toggleCardio(entry.exercise._id)}
                         className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                           hidden
@@ -408,7 +416,12 @@ const ProgressOverviewPage = () => {
                     Select at least one exercise to see the chart.
                   </p>
                 ) : (
-                  <ResponsiveContainer width="100%" height={320}>
+                  <div
+                    data-testid="cardio-progress-overview-chart"
+                    role="img"
+                    aria-label="Cardio duration progress overview chart"
+                  >
+                    <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={cardioChart} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #e5e7eb)" opacity={0.5} />
                       <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="var(--color-secondary-foreground, #6b7280)" />
@@ -439,7 +452,8 @@ const ProgressOverviewPage = () => {
                         );
                       })}
                     </LineChart>
-                  </ResponsiveContainer>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </section>
             )}
@@ -469,6 +483,7 @@ const ProgressOverviewPage = () => {
                     <Link
                       key={entry.exercise._id}
                       to={`/exercises/${entry.exercise._id}/progress`}
+                      aria-label={`View progress details for ${entry.exercise.name}`}
                       className="flex items-center justify-between px-5 py-4 hover:bg-secondary/30 transition-colors"
                     >
                       <div>

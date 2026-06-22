@@ -135,10 +135,10 @@ const SetRow = ({
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
+          <button aria-label="Save set changes" onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
             <Check className="w-3.5 h-3.5" /> Save
           </button>
-          <button onClick={() => setEditing(false)} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
+          <button aria-label="Cancel set edit" onClick={() => setEditing(false)} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
             Cancel
           </button>
         </div>
@@ -239,10 +239,10 @@ const AddSetForm = ({
         </div>
       </div>
       <div className="flex gap-2">
-        <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
+        <button aria-label={`Log set for ${exercise.name}`} onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all">
           <Check className="w-3.5 h-3.5" /> Log Set
         </button>
-        <button onClick={onCancel} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
+        <button aria-label={`Cancel set for ${exercise.name}`} onClick={onCancel} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-80 transition-all border border-border">
           Cancel
         </button>
       </div>

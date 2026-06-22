@@ -9,7 +9,7 @@ test("@smoke user can register, sign out, and login", async ({ page }) => {
 
   await page.getByLabel(/full name/i).fill(name);
   await page.getByLabel(/email/i).fill(email);
-  await page.getByLabel(/password/i).fill(DEFAULT_PASSWORD);
+  await page.getByRole("textbox", { name: /^password$/i }).fill(DEFAULT_PASSWORD);
   await page.getByRole("button", { name: /get started/i }).click();
 
   await expect(page.getByRole("heading", { name: /training dashboard/i })).toBeVisible();
@@ -19,7 +19,7 @@ test("@smoke user can register, sign out, and login", async ({ page }) => {
   await expect(page).toHaveURL(/\/login$/);
 
   await page.getByLabel(/email/i).fill(email);
-  await page.getByLabel(/password/i).fill(DEFAULT_PASSWORD);
+  await page.getByRole("textbox", { name: /^password$/i }).fill(DEFAULT_PASSWORD);
   await page.getByRole("button", { name: /sign in/i }).click();
 
   await expect(page.getByRole("heading", { name: /training dashboard/i })).toBeVisible();

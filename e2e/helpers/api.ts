@@ -114,6 +114,19 @@ export async function getExerciseByName(request: APIRequestContext, token: strin
   return exercise;
 }
 
+export async function createExercise(
+  request: APIRequestContext,
+  token: string,
+  payload: { name: string; category: "strength" | "cardio"; muscleGroup: string },
+) {
+  const response = await request.post(`${API_BASE_URL}/api/v1/exercises`, {
+    headers: authHeaders(token),
+    data: payload,
+  });
+
+  return expectJsonData<Exercise>(response, 201);
+}
+
 export async function createWorkout(
   request: APIRequestContext,
   token: string,
@@ -134,10 +147,11 @@ export async function createSession(
   request: APIRequestContext,
   token: string,
   workoutId: string,
+  date?: string,
 ) {
   const response = await request.post(`${API_BASE_URL}/api/v1/sessions`, {
     headers: authHeaders(token),
-    data: { workoutId },
+    data: date ? { workoutId, date } : { workoutId },
   });
 
   return expectJsonData<Session>(response, 201);

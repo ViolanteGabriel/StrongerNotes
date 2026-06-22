@@ -270,6 +270,7 @@ const ExercisesPage = () => {
                     </span>
                     <Link
                       to={`/exercises/${exercise._id}/progress`}
+                      aria-label={`View progress for ${exercise.name}`}
                       className="inline-flex items-center gap-1 text-xs text-primary hover:opacity-80 transition-opacity font-medium"
                     >
                       <TrendingUp className="w-3 h-3" />
