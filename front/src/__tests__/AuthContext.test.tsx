@@ -32,7 +32,9 @@ function LogoutButton() {
 
 function LoginButton() {
   const { login } = useAuth();
-  const handleLogin = () => login({ email: 'john@example.com', password: 'password123' });
+  const handleLogin = async () => {
+    await login({ email: 'john@example.com', password: 'password123' });
+  };
   return <button onClick={handleLogin}>Login</button>;
 }
 
@@ -76,6 +78,16 @@ describe('AuthContext', () => {
   });
 
   it('sets user and stores token in localStorage after login()', async () => {
+    const originalConsoleError = console.error;
+    const consoleError = jest.spyOn(console, 'error').mockImplementation((...args) => {
+      if (
+        typeof args[0] === 'string' &&
+        args[0].includes('The current testing environment is not configured to support act')
+      ) {
+        return;
+      }
+      originalConsoleError(...args);
+    });
     (loginService as jest.Mock).mockResolvedValue(mockLoginResponse);
 
     render(
@@ -97,6 +109,7 @@ describe('AuthContext', () => {
     expect(JSON.parse(localStorage.getItem('auth_user')!)).toMatchObject({
       email: 'john@example.com',
     });
+    consoleError.mockRestore();
   });
 
   it('clears user and localStorage after logout()', async () => {
