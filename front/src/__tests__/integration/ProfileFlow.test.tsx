@@ -24,7 +24,7 @@ jest.mock('react-router-dom', () => ({
 
 const mockUser = { _id: 'u1', name: 'TestUser', email: 'test@test.com' };
 
-function renderProfile(user = mockUser) {
+function renderProfile(user: typeof mockUser | null = mockUser) {
   return render(
     <AuthContext.Provider
       value={{
@@ -95,6 +95,38 @@ describe('ProfileFlow', () => {
     });
   });
 
+  it('Shows validation and generic save errors for Axios failures', async () => {
+    const { AxiosError } = jest.requireActual('axios');
+
+    renderProfile();
+    const badRequest = new AxiosError('Bad Request');
+    badRequest.response = { status: 400 } as never;
+    mockUpdateUser.mockRejectedValueOnce(badRequest);
+
+    const nameInput = screen.getByRole('textbox', { name: /full name/i });
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Invalid Name');
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(await screen.findByText('Invalid data. Please check the fields.')).toBeInTheDocument();
+  });
+
+  it('Shows a generic save message for non-validation Axios errors', async () => {
+    const { AxiosError } = jest.requireActual('axios');
+    const serverError = new AxiosError('Server Error');
+    serverError.response = { status: 500 } as never;
+    mockUpdateUser.mockRejectedValueOnce(serverError);
+
+    renderProfile();
+
+    const nameInput = screen.getByRole('textbox', { name: /full name/i });
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Server Error Name');
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(await screen.findByText('Could not save changes. Please try again.')).toBeInTheDocument();
+  });
+
   it('Shows generic error on unexpected failure', async () => {
     renderProfile();
     mockUpdateUser.mockRejectedValueOnce(new Error('network fail'));
@@ -142,6 +174,28 @@ describe('ProfileFlow', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /delete account/i }));
 
+    expect(mockDeleteUser).not.toHaveBeenCalled();
+  });
+
+  it('Shows delete error when account deletion fails', async () => {
+    mockDeleteUser.mockRejectedValueOnce(new Error('delete failed'));
+    window.confirm = jest.fn(() => true);
+
+    renderProfile();
+
+    await userEvent.click(screen.getByRole('button', { name: /delete account/i }));
+
+    expect(await screen.findByText('Could not delete account. Please try again.')).toBeInTheDocument();
+    expect(mockLogout).not.toHaveBeenCalled();
+  });
+
+  it('Does not save or delete when no user is loaded', async () => {
+    renderProfile(null);
+
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+    await userEvent.click(screen.getByRole('button', { name: /delete account/i }));
+
+    expect(mockUpdateUser).not.toHaveBeenCalled();
     expect(mockDeleteUser).not.toHaveBeenCalled();
   });
 });

@@ -28,11 +28,11 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-function renderDashboard() {
+function renderDashboard(user: any = { _id: '1', name: 'TestUser', email: 'test@test.com' }) {
   return render(
     <AuthContext.Provider
       value={{
-        user: { _id: '1', name: 'TestUser', email: 'test@test.com' },
+        user,
         isAuthenticated: true,
         isLoading: false,
         login: jest.fn(),
@@ -169,5 +169,80 @@ describe('DashboardFlow', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /history/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/sessions');
+  });
+
+  it('Navigates to progress and exercises pages', async () => {
+    mockGetWorkouts.mockResolvedValueOnce([]);
+    mockGetSessions.mockResolvedValueOnce([]);
+
+    renderDashboard();
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /progress/i })).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole('button', { name: /progress/i }));
+    await userEvent.click(screen.getByRole('button', { name: /exercises/i }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/progress');
+    expect(mockNavigate).toHaveBeenCalledWith('/exercises');
+  });
+
+  it('Navigates to workout and session details from cards', async () => {
+    mockGetWorkouts.mockResolvedValueOnce([
+      { _id: 'w1', name: 'Treino C', exercises: [{}], createdAt: '', updatedAt: '', owner: 'u1' } as any
+    ]);
+    mockGetSessions.mockResolvedValueOnce([
+      { _id: 's1', workout: null, owner: 'u1', date: 'invalid-date', notes: null, createdAt: 'invalid-date', updatedAt: '' } as any
+    ]);
+    mockGetSessionById.mockRejectedValueOnce(new Error('detail failed'));
+
+    renderDashboard();
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /view treino c/i })).toBeInTheDocument());
+
+    await userEvent.click(screen.getByRole('button', { name: /view treino c/i }));
+    await userEvent.click(screen.getByRole('button', { name: /open workout session from unknown date/i }));
+
+    expect(screen.getByText('1 exercise')).toBeInTheDocument();
+    expect(screen.getByText('Workout')).toBeInTheDocument();
+    expect(screen.getByText('Unknown date')).toBeInTheDocument();
+    expect(mockNavigate).toHaveBeenCalledWith('/workouts/w1');
+    expect(mockNavigate).toHaveBeenCalledWith('/sessions/s1');
+  });
+
+  it('Shows loading fallbacks and default user labels', async () => {
+    mockGetWorkouts.mockImplementationOnce(() => new Promise(() => {}));
+    mockGetSessions.mockImplementationOnce(() => new Promise(() => {}));
+
+    renderDashboard(null);
+
+    expect(screen.getByText('Welcome back, Athlete!')).toBeInTheDocument();
+    expect(screen.getAllByText('--').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByText('U').length).toBeGreaterThan(0);
+  });
+
+  it('Shows load errors and start routine errors', async () => {
+    mockGetWorkouts.mockRejectedValueOnce(new Error('workouts failed'));
+    mockGetSessions.mockRejectedValueOnce(new Error('sessions failed'));
+
+    renderDashboard();
+
+    await waitFor(() => {
+      expect(screen.getByText('Could not load routines.')).toBeInTheDocument();
+      expect(screen.getByText('Could not load session data.')).toBeInTheDocument();
+    });
+
+    jest.clearAllMocks();
+    mockGetWorkouts.mockResolvedValueOnce([
+      { _id: 'w1', name: 'Treino D', exercises: [], createdAt: '', updatedAt: '', owner: 'u1' } as any
+    ]);
+    mockGetSessions.mockResolvedValueOnce([]);
+    mockCreateSession.mockRejectedValueOnce(new Error('start failed'));
+
+    renderDashboard();
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /start treino d/i })).toBeInTheDocument());
+    await userEvent.click(screen.getByRole('button', { name: /start treino d/i }));
+
+    expect(await screen.findByText('Could not start session. Please try again.')).toBeInTheDocument();
   });
 });

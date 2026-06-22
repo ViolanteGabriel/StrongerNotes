@@ -1,5 +1,6 @@
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { AuthProvider } from '../contexts/AuthContext';
 import { useAuth } from '../contexts/auth-context';
 
@@ -21,6 +22,7 @@ function AuthConsumer() {
       <span data-testid="loading">{String(isLoading)}</span>
       <span data-testid="authenticated">{String(isAuthenticated)}</span>
       <span data-testid="user-name">{user?.name ?? 'none'}</span>
+      <span data-testid="user-email">{user?.email ?? 'none'}</span>
     </div>
   );
 }
@@ -38,12 +40,30 @@ function LoginButton() {
   return <button onClick={handleLogin}>Login</button>;
 }
 
+function UpdateUserButton() {
+  const { updateUserData } = useAuth();
+  return <button onClick={() => updateUserData({ name: 'Jane Updated' })}>Update user</button>;
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
 });
 
 describe('AuthContext', () => {
+  it('throws when useAuth is rendered outside its provider', () => {
+    function MissingProviderConsumer() {
+      useAuth();
+      return <div>auth</div>;
+    }
+
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => render(<MissingProviderConsumer />)).toThrow('useAuth must be used within an AuthProvider');
+
+    consoleError.mockRestore();
+  });
+
   it('starts unauthenticated with no user when localStorage is empty', async () => {
     render(
       <AuthProvider>
@@ -112,6 +132,68 @@ describe('AuthContext', () => {
     consoleError.mockRestore();
   });
 
+  it('normalizes login responses that already use _id', async () => {
+    (loginService as jest.Mock).mockResolvedValue({
+      token: 'mock.jwt.token',
+      user: { _id: 'abc123', name: 'Jane Doe', email: 'jane@example.com' },
+    });
+
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+        <LoginButton />
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+
+    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+
+    expect(screen.getByTestId('user-name').textContent).toBe('Jane Doe');
+    expect(JSON.parse(localStorage.getItem('auth_user')!)).toMatchObject({
+      _id: 'abc123',
+      email: 'jane@example.com',
+    });
+  });
+
+  it('rejects login responses without a user id', async () => {
+    (loginService as jest.Mock).mockResolvedValue({
+      token: 'mock.jwt.token',
+      user: { name: 'No Id', email: 'missing-id@example.com' },
+    });
+
+    function InvalidLoginButton() {
+      const { login } = useAuth();
+      const [error, setError] = useState('');
+      return (
+        <>
+          <button
+            onClick={() => login({ email: 'john@example.com', password: 'password123' }).catch((err) => {
+              setError(err instanceof Error ? err.message : 'unknown');
+            })}
+          >
+            Invalid login
+          </button>
+          <span data-testid="login-error">{error}</span>
+        </>
+      );
+    }
+
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+        <InvalidLoginButton />
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+
+    await userEvent.click(screen.getByRole('button', { name: 'Invalid login' }));
+    await waitFor(() => expect(screen.getByTestId('login-error').textContent).toBe('Invalid user payload'));
+    expect(screen.getByTestId('authenticated').textContent).toBe('false');
+    expect(localStorage.getItem('auth_token')).toBeNull();
+  });
+
   it('clears user and localStorage after logout()', async () => {
     localStorage.setItem('auth_token', 'existing.token');
     localStorage.setItem('auth_user', JSON.stringify(mockLoginResponse.user));
@@ -130,6 +212,45 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('authenticated').textContent).toBe('false');
     expect(screen.getByTestId('user-name').textContent).toBe('none');
     expect(localStorage.getItem('auth_token')).toBeNull();
+    expect(localStorage.getItem('auth_user')).toBeNull();
+  });
+
+  it('updates the current user data in state and localStorage', async () => {
+    localStorage.setItem('auth_token', 'existing.token');
+    localStorage.setItem('auth_user', JSON.stringify(mockLoginResponse.user));
+
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+        <UpdateUserButton />
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'));
+
+    await userEvent.click(screen.getByRole('button', { name: 'Update user' }));
+
+    expect(screen.getByTestId('user-name').textContent).toBe('Jane Updated');
+    expect(screen.getByTestId('user-email').textContent).toBe('john@example.com');
+    expect(JSON.parse(localStorage.getItem('auth_user')!)).toMatchObject({
+      name: 'Jane Updated',
+      email: 'john@example.com',
+    });
+  });
+
+  it('ignores user updates while signed out', async () => {
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+        <UpdateUserButton />
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
+
+    await userEvent.click(screen.getByRole('button', { name: 'Update user' }));
+
+    expect(screen.getByTestId('authenticated').textContent).toBe('false');
     expect(localStorage.getItem('auth_user')).toBeNull();
   });
 

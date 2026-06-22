@@ -106,6 +106,17 @@ describe('API Services', () => {
     expect(mockApi.post).toHaveBeenCalledWith('/api/v1/users', { name: 'N', email: 'E', password: 'P' });
   });
 
+  it('createUser logs and rethrows API failures', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const error = new Error('create failed');
+    mockApi.post.mockRejectedValueOnce(error);
+
+    await expect(createUser({ name: 'N', email: 'E', password: 'P' })).rejects.toThrow('create failed');
+
+    expect(consoleError).toHaveBeenCalledWith('Error creating user:', error);
+    consoleError.mockRestore();
+  });
+
   it('deleteUser', async () => {
     mockApi.delete.mockResolvedValueOnce({ data: {} });
     await deleteUser('1');

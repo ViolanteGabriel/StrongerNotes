@@ -48,6 +48,19 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
+  it('toggles password visibility', async () => {
+    renderLoginPage();
+
+    const password = screen.getByLabelText(/^password$/i);
+    expect(password).toHaveAttribute('type', 'password');
+
+    await userEvent.click(screen.getByRole('button', { name: /show password/i }));
+    expect(password).toHaveAttribute('type', 'text');
+
+    await userEvent.click(screen.getByRole('button', { name: /hide password/i }));
+    expect(password).toHaveAttribute('type', 'password');
+  });
+
   it('navigates to /dashboard on successful login', async () => {
     mockLogin.mockResolvedValue(undefined);
 
@@ -98,6 +111,22 @@ describe('LoginPage', () => {
 
     expect(await screen.findByText(/could not sign in right now/i)).toBeInTheDocument();
     expect(consoleError).toHaveBeenCalledWith('Login error:', axiosError);
+    consoleError.mockRestore();
+  });
+
+  it('shows an unexpected error message for non-Axios failures', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const unexpectedError = new Error('Boom');
+    mockLogin.mockRejectedValue(unexpectedError);
+
+    renderLoginPage();
+
+    await userEvent.type(screen.getByLabelText(/email/i), 'john@example.com');
+    await userEvent.type(screen.getByLabelText(/^password$/i), 'password123');
+    await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(await screen.findByText(/unexpected error/i)).toBeInTheDocument();
+    expect(consoleError).toHaveBeenCalledWith('Login error:', unexpectedError);
     consoleError.mockRestore();
   });
 

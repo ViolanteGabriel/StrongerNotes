@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from '../../App';
 import { getSessions } from '../../services/requests/sessions/getSessions';
 import { getSessionById } from '../../services/requests/sessions/getSessionById';
@@ -55,6 +56,33 @@ describe('AppRouting', () => {
     mockCurrentInitialEntry = '/';
     render(<App />);
     expect(screen.getByText(/Scientific precision for/i)).toBeInTheDocument();
+  });
+
+  it('Landing page links to dashboard when restored as authenticated', async () => {
+    mockCurrentInitialEntry = '/';
+    localStorage.setItem('auth_token', 'fake-token');
+    localStorage.setItem('auth_user', JSON.stringify({ id: '1', name: 'User', email: 'test@test.com' }));
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: /dashboard/i })).toHaveAttribute('href', '/dashboard');
+    });
+  });
+
+  it('toggles and persists theme in both directions', async () => {
+    mockCurrentInitialEntry = '/';
+    const { unmount } = render(<App />);
+
+    await userEvent.click(screen.getByRole('button', { name: /toggle theme/i }));
+    expect(localStorage.getItem('theme')).toBe('dark');
+    unmount();
+
+    localStorage.setItem('theme', 'dark');
+    render(<App />);
+
+    await userEvent.click(screen.getByRole('button', { name: /toggle theme/i }));
+    expect(localStorage.getItem('theme')).toBe('light');
   });
 
   it('Login page renders on /login', async () => {
