@@ -228,6 +228,7 @@ const WorkoutDetailPage = () => {
             <div className="flex items-center gap-3 mb-8">
               <button
                 onClick={handleStartSession}
+                aria-label={`Start session for ${workout.name}`}
                 disabled={startingSession || workout.exercises.length === 0}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 transition-all"
               >
