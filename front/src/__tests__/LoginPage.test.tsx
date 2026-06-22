@@ -67,6 +67,7 @@ describe('LoginPage', () => {
   });
 
   it('shows a 401 error message when credentials are invalid', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     const axiosError = new AxiosError('Unauthorized');
     axiosError.response = { status: 401 } as never;
     mockLogin.mockRejectedValue(axiosError);
@@ -79,9 +80,12 @@ describe('LoginPage', () => {
 
     expect(await screen.findByText(/invalid e-?mail or password/i)).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
+    expect(consoleError).toHaveBeenCalledWith('Login error:', axiosError);
+    consoleError.mockRestore();
   });
 
   it('shows a generic error message on server error', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     const axiosError = new AxiosError('Server Error');
     axiosError.response = { status: 500 } as never;
     mockLogin.mockRejectedValue(axiosError);
@@ -93,6 +97,8 @@ describe('LoginPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     expect(await screen.findByText(/could not sign in right now/i)).toBeInTheDocument();
+    expect(consoleError).toHaveBeenCalledWith('Login error:', axiosError);
+    consoleError.mockRestore();
   });
 
   it('disables the submit button while the request is in flight', async () => {
